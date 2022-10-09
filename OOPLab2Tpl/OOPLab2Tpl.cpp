@@ -31,7 +31,7 @@ int main()
 	    }
         cout << " Press any key and enter\n";
         ch = cin.get();
-    } while (ch != '6');
+    } while (ch != '5');
    
  
     return 0;
