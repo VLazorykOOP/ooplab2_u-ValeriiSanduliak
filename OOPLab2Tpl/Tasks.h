@@ -1,6 +1,6 @@
 #pragma once
-void task1();
-void task2();
-void task3();
-void task4();
+void TaskT1();
+void TaskT2();
+void TaskT3();
+void TaskT4();
 void MenuTask();
