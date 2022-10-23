@@ -32,7 +32,7 @@ int main()
         case '1': TaskT1();  break;
         case '2': TaskT2();  break;
         case '3': cout << "...[loading]"<<endl;  break;
-        case '4': cout << "...[loading]"<<endl;  break;
+        case '4': TaskT4();  break;
 		case '5': return 0;
 	    }
         cout << " Press any key and enter\n";
