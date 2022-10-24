@@ -11,7 +11,7 @@ void MenuTask()
     cout << "    1.  Calculation of expressions using bitwise operations  \n";
     cout << "    2.  Data encryption using bitwise operations \n";
     cout << "    3.  Data encryption using structures with bit fields \n";
-    cout << "    4.  The problem of using bitwise operations \n";
+    cout << "    4.  Encode the input sequence using an XOR mask, which is selected depending on its size:" << endl<<"        in the case of an even size, use the mask '01010101',"<<endl <<"        in the case of an odd one - '10101010'. \n";
     cout << "    5.  Exit \n";
 }
 void TaskT1()
@@ -37,6 +37,30 @@ void TaskT1()
     cin.get();
     return;
 }
+void outbin(unsigned short in)
+{
+    char out[17];
+    int i,  ix, n = 0;
+    for (i = 0; i < 16; i++)  out[i] = '0';
+    double x;
+    
+    if (in != 0) {
+        x = in;
+        do {
+            x = x / 2.;
+            ix = (int)x;
+            if ((x - ix) != 0) out[n] = '1';
+            else out[n] = '0';
+            n++;
+            x = ix;
+        } while (x >= 1);
+    }
+ 
+    for (i = 16 - 1; i >= 0; i--)
+        cout << out[i];
+}
+
+
 
 
 void TaskT2()
@@ -68,17 +92,7 @@ void TaskT2()
             
         }
      
-      /*  for (int i = 0; i < 4; i++)
-        {
-            if (strlen(S[i]) < 16) {
-                for (int f = strlen(S[i]); f < 16; f++)
-                {
-                    S[i][f] = ' ';
-                    
-                }
-                S[i][16] = '\0';
-            }
-        }*/
+     
 
           cout << endl << endl;
             for (int i = 0; i < 4; i++)
@@ -102,9 +116,10 @@ void TaskT2()
                 // position i;
                 r = i;              // 0000 0000 0000 00__<-i
 
-                c = S[i][j];
+                c = S[i][l];
                
-                t = c >> 4;       //  0000 1100 
+                t = c;
+                t = t >> 4;       //  0000 1100 
                 r |= t << 2;       // oldest part     0000 0000 00ss ssii
                
                 b = 0; t = 1;
@@ -140,11 +155,13 @@ void TaskT2()
                 }
                 w = 1 << 15;         //bppp pmmm mbss ssii
                 if (b) r |= w;
+                // 1000 0000 0000 0000   0x8000
 
                 sh_dat[j] = r;
                 j++;
                 ofs << hex << r << ' ';
-                cout << hex << r << endl;
+                cout << hex << r <<"\0";
+               // outbin(r); cout << S[i][j] << endl;
             }
 
         ofsb.write((char*)sh_dat, 64 * sizeof(unsigned short));
@@ -154,37 +171,65 @@ void TaskT2()
         fin.open("outb.dat", ios::in | ios::binary);
         fin.read((char*)sd2, 64 * sizeof(unsigned short));
          short indi, indj;
-        unsigned short ow,yw;
- 
+        unsigned short ow,yw,bp1,bp2;
+        char ch1='0';
         for (i = 0; i < 64; i++)
-        {   
-            r = sd2[i];           // bppp pmmm mbss ssii
-                                  //1000 0000 0000 0000
-                                  //0000 0000 0100 0000
-           
-
-           indj = r & 0x7800;    //0111 1000 0000 0000 
-           indj  >>= 11;
-
-           yw = r & 0x0780;       //0000 0111 1000 0000 younger part   
-           yw >>= 7;
-
+        {
             
+                r = sd2[i];           // bppp pmmm mbss ssii
+                //1000 0000 0000 0000
+                //0000 0000 0100 0000
 
-           ow = r & 0x003c;        //0000 0000 0011 1100 older part
-           ow <<= 2;                //0000 0000 ssss 0000
+                bp1 = r & 0x8000 ? 1 : 0;
+                t = 1 << 7;
+                b = 0;
+                for (k = 0; k < 8; k++) // обчислення біта парності
+                {
+                    if (r & t) {
+                        if (b == 0) b = 1; else b = 0;
+                    }
+                    t <<= 1;
+                }
+                if (b != bp1) {
+                    cout << "ERRoR bp1";
+                    exit(0);
+                }
 
-           indi = r & 0x0003;     //0000 0000 0000 0011
 
-            
+                indj = r & 0x7800;    //0111 1000 0000 0000 
+                indj >>= 11;
+                //cout << "index J : " << indj<<endl;
 
-            
-     
-            ch = yw|ow;
-            so[indi][indj] = ch;
-             
+                yw = r & 0x0780;       //0000 0111 1000 0000 younger part   
+                yw >>= 7;
+
+                bp2 = r & 0x0040 ? 1 : 0;   // 0000 0000 0100 0000
+                t = 1;
+                b = 0;
+                for (k = 0; k < 6; k++) // обчислення біта парності
+                {
+                    if (r & t) {
+                        if (b == 0) b = 1; else b = 0;
+                    }
+                    t <<= 1;
+                }
+                if (b != bp2) {
+                    cout << "ERRoR bp2";
+                    exit(0);
+                }
+
+                ow = r & 0x003c;        //0000 0000 0011 1100 older part
+                ow <<= 2;                //0000 0000 ssss 0000
+
+                indi = r & 0x0003;     //0000 0000 0000 0011
+
+               // cout << "index I : " << indi << endl;
+               // cout << "ch = " << ch1 << endl;
+                ch1 = ow | yw;
+                so[indi][indj] = ch1;
+          
         }
-      
+        cout << endl;
         for (i = 0; i < 4; i++)
         {
             for (l = 0; l < 16; l++)
@@ -199,18 +244,30 @@ void TaskT2()
 
 
 struct TextCode {
-    unsigned short nrsymbol : 2;
-    unsigned short oldestpart : 4;
-    unsigned short bitp1 : 1;
-    unsigned short youngestpart : 4;
-    unsigned short psymbol : 4;
-    unsigned short bitp2 : 1;
+    unsigned short nr : 2;
+    unsigned short op : 4;
+    unsigned short btp1 : 1;
+    unsigned short yp : 4;
+    unsigned short ps : 4;
+    unsigned short btp2 : 1;
 };
 
-/*
-unsigned char pbit(unsigned char c)
+
+unsigned char pbit1(unsigned char c)
 {
     unsigned char t = 1, b = 0;
+    for (int j = 0; j < 6; j++)         // обчислення біта парності
+    {
+        if (c & t) {
+            if (b == 0) b = 1; else b = 0;
+        }
+        t <<= 1;
+    }
+    return b;
+}
+unsigned char pbit2(unsigned char c)
+{
+    unsigned char t = 1<<7, b = 0;
     for (int j = 0; j < 8; j++)         // обчислення біта парності
     {
         if (c & t) {
@@ -220,10 +277,8 @@ unsigned char pbit(unsigned char c)
     }
     return b;
 }
-*/
 void TaskT3()
 {
-
    
 }
 

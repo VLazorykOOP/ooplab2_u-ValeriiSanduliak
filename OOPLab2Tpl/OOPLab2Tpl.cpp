@@ -7,13 +7,6 @@ using namespace std;
 #include "Tasks.h"
 #include "Examples.h"
 
-
-
-
-
-
- //@brief 
-/// @return 
 int main()
 { 
  
@@ -31,7 +24,7 @@ int main()
         switch (ch) {
         case '1': TaskT1();  break;
         case '2': TaskT2();  break;
-        case '3': cout << "...[loading]"<<endl;  break;
+        case '3': TaskT3();  break;
         case '4': TaskT4();  break;
 		case '5': return 0;
 	    }
@@ -50,7 +43,7 @@ int main()
 
 
 
-   // Example3();
+   
     return 0;
 }
 
