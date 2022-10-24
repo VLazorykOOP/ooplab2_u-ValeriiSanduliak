@@ -243,40 +243,7 @@ void TaskT2()
 }
 
 
-struct TextCode {
-    unsigned short nr : 2;
-    unsigned short op : 4;
-    unsigned short btp1 : 1;
-    unsigned short yp : 4;
-    unsigned short ps : 4;
-    unsigned short btp2 : 1;
-};
 
-
-unsigned char pbit1(unsigned char c)
-{
-    unsigned char t = 1, b = 0;
-    for (int j = 0; j < 6; j++)         // обчислення біта парності
-    {
-        if (c & t) {
-            if (b == 0) b = 1; else b = 0;
-        }
-        t <<= 1;
-    }
-    return b;
-}
-unsigned char pbit2(unsigned char c)
-{
-    unsigned char t = 1<<7, b = 0;
-    for (int j = 0; j < 8; j++)         // обчислення біта парності
-    {
-        if (c & t) {
-            if (b == 0) b = 1; else b = 0;
-        }
-        t <<= 1;
-    }
-    return b;
-}
 void TaskT3()
 {
    
